@@ -22,12 +22,23 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "This Site",
+    description:
+      "My personal site. An Expo Router app that ships as a static web build, written with React Native primitives so the same components could run on native later. Web is the only target today.",
+    link: "https://github.com/avolel/personal-site",
+    tags: [
+      { label: "React Native", color: "sky" },
+      { label: "Expo Router", color: "fuchsia" },
+    ],
+  },
+  {
     name: "Aurum",
     description: "Gold price intelligence platform.",
     link: "https://github.com/avolel/aurum",
     tags: [
       { label: "C#", color: "sky" },
-      { label: "React Native Web", color: "fuchsia" },
+      { label: "React Native", color: "fuchsia" },
+      { label: "Expo Router", color: "sky" },
     ],
   },
   {
@@ -37,7 +48,18 @@ export const projects: Project[] = [
     link: "https://github.com/avolel/LLM-WIKI",
     tags: [
       { label: "C#", color: "sky" },
-      { label: "React Native Web", color: "fuchsia" },
+      { label: "React Native", color: "fuchsia" },
+      { label: "Expo Router", color: "sky" },
+    ],
+  },
+  {
+    name: "Personal AI Assistant",
+    description:
+      "A fully local, always-on AI assistant that runs entirely on your machine. Built with Python, it maintains a persistent identity, evolving memory, emotional simulation, and time awareness — designed to feel like a consistent digital personality rather than a stateless chatbot.",
+    link: "https://github.com/avolel/assistant",
+    tags: [
+      { label: "Python", color: "sky" },
+      { label: "React", color: "fuchsia" },
     ],
   },
   {
@@ -57,7 +79,8 @@ export const projects: Project[] = [
     link: "https://github.com/avolel/ereader",
     tags: [
       { label: "C#", color: "sky" },
-      { label: "React Native Web", color: "fuchsia" },
+      { label: "React Native", color: "fuchsia" },
+      { label: "Expo Router", color: "sky" },
     ],
   },
   {
