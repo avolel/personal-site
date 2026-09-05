@@ -1,56 +1,77 @@
-# Welcome to your Expo app 👋
+# personal-site
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Andre Volel's personal site. An Expo Router app that ships as a static web
+build, written with React Native primitives so the same components could run
+on native later. Web is the only target today.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Running it
 
 ```bash
-npm run reset-project
+npm install
+npm run web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+That serves the site at `localhost:8081`. `npm start` gives you the usual Expo
+menu if you want to poke at it on a device.
 
-### Other setup steps
+Tailwind config changes are not picked up by fast refresh — restart Metro after
+editing `tailwind.config.js` or `src/global.css`.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Layout
 
-## Learn more
+```
+src/
+  app/
+    _layout.tsx    root Stack, header hidden everywhere
+    index.tsx      the only route; the entire page
+    +html.tsx      static HTML shell (web only, Node-only module)
+  components/      presentational pieces, no data of their own
+  site.ts          all copy and the project list
+  global.css       CSS variables: palette and font stacks
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+There is one route. An earlier version had a `(tabs)` group; it was removed
+because a single-page site got nothing from the extra navigator.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Content lives in `src/site.ts`, not inside components. Adding a project means
+editing that file. The one constraint is tag colors: `TagColor` is a closed
+union because NativeWind resolves class names at build time, so `Tag.tsx` maps
+each value to literal class strings. A new color needs a case added there.
 
-## Join the community
+## Two things that will bite you
 
-Join our community of developers creating universal apps.
+**The browser tab title comes from `<Head>`, not from the shell.** `+html.tsx`
+sets a `<title>`, and it is genuinely served — but expo-router wraps every app
+in react-helmet-async (`qualified-entry.js`) and hardcodes React Navigation's
+`documentTitle` to disabled (`ExpoRoot.js`). On hydration Helmet takes
+ownership of `<head>` and strips the server-rendered title if no `<Head>`
+declares one, leaving the tab showing the URL. So `index.tsx` renders
+`<Head><title>`, and that is the only thing holding the title on web. Setting
+`title` in `Stack` `screenOptions` does nothing here. Keep the `+html.tsx`
+title in sync by hand — it is what crawlers and the pre-hydration frame see.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**`Pressable` is not an anchor.** react-native-web renders it as a `<div
+role="button">`, so `href`/`target`/`rel` passed to it are inert. `ExternalLinkText`
+opens links imperatively: `window.open` on web, `expo-web-browser` on native.
+The `window.open` call has to stay synchronous inside the press handler — any
+`await` before it spends the user gesture and the popup gets blocked. The
+tradeoff is a link with no middle-click, no "copy link address", and no
+crawlable `href`.
+
+## Styling
+
+NativeWind v4 with Tailwind. Colors and font stacks are CSS variables in
+`global.css`, surfaced as Tailwind tokens in `tailwind.config.js`, so the
+palette is defined once. The theme is dark-only by design — there is no light
+variant and no `.dark:` pairing.
+
+`font-display` / `font-mono` resolve to `var(--font-display)` /
+`var(--font-mono)`. That works on web. It is unverified on native, where a
+comma-separated CSS font stack is not a valid `fontFamily` — worth checking
+before this ever ships to a device. Spline Sans is loaded via a Google Fonts
+`<link>` in `+html.tsx`, which is also web-only.
+
+## Docs
+
+Expo moves fast and older answers rot. Use the versioned docs for the SDK this
+project pins: <https://docs.expo.dev/versions/v57.0.0/>
