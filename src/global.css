@@ -10,22 +10,34 @@
     --font-mono:
       ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
       Courier New, monospace;
-    --font-rounded:
-      "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo, "MS PGothic",
-      sans-serif;
-    --font-serif: Georgia, "Times New Roman", serif;
-    --color-text: 0 0 0;
-    --color-text-secondary: 96 100 108;
-    --color-background: 255 255 255;
-    --color-background-element: 240 240 243;
-    --color-background-selected: 224 225 230;
-  }
 
-  .dark:root {
-    --color-text: 255 255 255;
-    --color-text-secondary: 176 180 186;
-    --color-background: 0 0 0;
-    --color-background-element: 33 34 37;
-    --color-background-selected: 46 49 53;
+    /* Astro-boilerplate palette. Dark-only by design: the theme has no
+       light variant, so there is no `.dark:root` block to pair with this. */
+    --color-text: 243 244 246; /* gray-100  */
+    --color-text-secondary: 156 163 175; /* gray-400  */
+    --color-text-muted: 229 231 235; /* gray-200  */
+    --color-background: 15 23 42; /* slate-900 */
+    --color-background-element: 30 41 59; /* slate-800 */
+    --color-background-selected: 51 65 85; /* slate-700 */
+    --color-border: 75 85 99; /* gray-600  */
+    --color-accent: 34 211 238; /* cyan-400  */
+    --color-accent-strong: 14 165 233; /* sky-500   */
+  }
+}
+
+@layer components {
+  /* Self-contained gradient text. Depends only on the two CSS variables
+     above — not on Tailwind's --tw-gradient-* chain — so a stale config
+     cache can't silently blank it out. Web-only: `background-clip: text`
+     has no React Native equivalent. */
+  .gradient-text {
+    background-image: linear-gradient(
+      to bottom right,
+      rgb(var(--color-accent-strong)),
+      rgb(var(--color-accent))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }
